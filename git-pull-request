@@ -10,6 +10,8 @@ usage() {
 cat << EOF
 usage: git pull-request -h <branch> -t <title> [options]
 
+Create a Pull Request (PR) in GitHub.
+
 OPTIONS:
    -h <branch>         Branch you want to PR.
    -r <repo>           Repo where to PR. Default is picked up from "$ git remote -v" origin fetch url.
@@ -46,12 +48,20 @@ do
   esac
 done
 
-if [[ -z $HEAD ]] || [[ -z $BASE ]] || [[ -z $TITLE ]]
-then
+if [[ -z $HEAD ]] || [[ -z $BASE ]] || [[ -z $TITLE ]]; then
   usage
   exit 1
 fi
 
-BODY="{\"head\": \"$HEAD\", \"base\": \"$BASE\", \"title\": \"$TITLE\"}"
+BODY=("\"head\": \"$HEAD\"" "\"base\": \"$BASE\"" "\"title\": \"$TITLE\"")
+
+if [[ -n $DESCRIPTION ]]; then
+  BODY[3]="\"body\": \"$DESCRIPTION\""
+fi
+
+SAVE_IFS=$IFS
+IFS=","
+BODY="{${BODY[*]}}"
+IFS=$SAVE_IFS
 
 curl -X POST -H "Authorization: token $GIT_PULL_REQUEST_ACCESS_TOKEN" "https://api.github.com/repos/$OWNER/$REPO/pulls" -d "$BODY"
