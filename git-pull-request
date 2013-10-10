@@ -1,0 +1,57 @@
+#!/bin/bash
+if [[ -z "$GIT_PULL_REQUEST_ACCESS_TOKEN" ]]; then
+  echo "Create an access token for your GitHub user at"
+  echo "https://github.com/settings/applications"
+  echo "and store it in the GIT_PULL_REQUEST_ACCESS_TOKEN variable"
+  exit 1
+fi
+
+usage() {
+cat << EOF
+usage: git pull-request -h <branch> -t <title> [options]
+
+OPTIONS:
+   -h <branch>         Branch you want to PR.
+   -r <repo>           Repo where to PR. Default is picked up from "$ git remote -v" origin fetch url.
+   -o <owner>          Owner of the repo. Default is picked up from "$ git remote -v" origin fetch url.
+   -b <base>           Branch where you want your PR merged into. Default 'master'.
+   -t <title>          Title of the PR.
+   -d <description>    Description of the PR.
+EOF
+}
+
+BASE="master"
+REMOTE_ORIGIN=$(git remote -v | grep -E "origin.*\(fetch\)")
+OWNER=$(echo $REMOTE_ORIGIN | sed -E "s/.*com[:\/](.*)\/.*/\\1/")
+REPO=$(echo $REMOTE_ORIGIN | sed -E "s/.*com[:\/].*\/(.*)\..*/\\1/" | cut -d " " -f 1)
+
+while getopts “h:b:t:d:” OPTION
+do
+  case $OPTION in
+    h)
+      HEAD=$OPTARG;;
+    r)
+      REPO=$OPTARG;;
+    o)
+      OWNER=$OPTARG;;
+    b)
+      BASE=$OPTARG;;
+    t)
+      TITLE=$OPTARG;;
+    d)
+      DESCRIPTION=$OPTARG;;
+    ?)
+      usage
+      exit;;
+  esac
+done
+
+if [[ -z $HEAD ]] || [[ -z $BASE ]] || [[ -z $TITLE ]]
+then
+  usage
+  exit 1
+fi
+
+BODY="{\"head\": \"$HEAD\", \"base\": \"$BASE\", \"title\": \"$TITLE\"}"
+
+curl -X POST -H "Authorization: token $GIT_PULL_REQUEST_ACCESS_TOKEN" "https://api.github.com/repos/$OWNER/$REPO/pulls" -d "$BODY"
