@@ -27,7 +27,7 @@ REMOTE_ORIGIN=$(git remote -v | grep -E "origin.*\(fetch\)")
 OWNER=$(echo $REMOTE_ORIGIN | sed -E "s/.*com[:\/](.*)\/.*/\\1/")
 REPO=$(echo $REMOTE_ORIGIN | sed -E "s/.*com[:\/].*\/(.*)\..*/\\1/" | cut -d " " -f 1)
 
-while getopts “h:b:t:d:” OPTION
+while getopts “h:r:b:t:d:” OPTION
 do
   case $OPTION in
     h)
@@ -64,4 +64,4 @@ IFS=","
 BODY="{${BODY[*]}}"
 IFS=$SAVE_IFS
 
-curl -X POST -H "Authorization: token $GIT_PULL_REQUEST_ACCESS_TOKEN" "https://api.github.com/repos/$OWNER/$REPO/pulls" -d "$BODY"
+curl -s -X POST -H "Authorization: token $GIT_PULL_REQUEST_ACCESS_TOKEN" "https://api.github.com/repos/$OWNER/$REPO/pulls" -d "$BODY" > /dev/null
