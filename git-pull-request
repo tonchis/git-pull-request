@@ -1,8 +1,10 @@
 #!/bin/bash
-if [[ -z "$GIT_PULL_REQUEST_ACCESS_TOKEN" ]]; then
+ACCESS_TOKEN=$(git config --get github.pull-request.token)
+if [[ -z $ACCESS_TOKEN ]]; then
   echo "Create an access token for your GitHub user at"
-  echo "https://github.com/settings/applications"
-  echo "and store it in the GIT_PULL_REQUEST_ACCESS_TOKEN variable"
+  echo "  https://github.com/settings/applications"
+  echo "and set it under git config github.pull-request.token"
+  echo "  $ git config --global github.pull-request.token <access_token>"
   exit 1
 fi
 
@@ -64,4 +66,4 @@ IFS=","
 BODY="{${BODY[*]}}"
 IFS=$SAVE_IFS
 
-curl -s -X POST -H "Authorization: token $GIT_PULL_REQUEST_ACCESS_TOKEN" "https://api.github.com/repos/$OWNER/$REPO/pulls" -d "$BODY" > /dev/null
+curl -s -X POST -H "Authorization: token $ACCESS_TOKEN" "https://api.github.com/repos/$OWNER/$REPO/pulls" -d "$BODY" > /dev/null
