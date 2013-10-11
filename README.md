@@ -29,5 +29,7 @@ OPTIONS:
    -b <base>           Branch where you want your PR merged into. Default "master".
    -t <title>          Title of the PR.
    -d <description>    Description of the PR.
+   -i <issue>          Number of the issue related.
+                       WARNING: This will convert the issue into a PR and override <title> and <description>
 ```
 
