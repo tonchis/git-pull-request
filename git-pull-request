@@ -24,6 +24,8 @@ OPTIONS:
    -d <description>    Description of the PR.
    -i <issue>          Number of the issue related.
                        WARNING: This will convert the issue into a PR and override <title> and <description>
+   -e                  Will open your EDITOR in a temporary file to write the description.
+
 EOF
 }
 
@@ -32,7 +34,7 @@ REMOTE_ORIGIN=$(git remote -v | grep -E "origin.*\(fetch\)")
 OWNER=$(echo $REMOTE_ORIGIN | sed -E "s/.*com[:\/](.*)\/.*/\\1/")
 REPO=$(echo $REMOTE_ORIGIN | sed -E "s/.*com[:\/].*\/(.*)\..*/\\1/" | cut -d " " -f 1)
 
-while getopts “h:r:b:t:d:i:” OPTION
+while getopts “h:r:b:t:d:i:e” OPTION
 do
   case $OPTION in
     h)
@@ -49,6 +51,8 @@ do
       DESCRIPTION=$OPTARG;;
     i)
       ISSUE=$OPTARG;;
+    e)
+      EDIT=true;;
     ?)
       usage
       exit;;
@@ -68,6 +72,13 @@ else
   BODY[2]="\"title\": \"$TITLE\""
 
   if [[ -n $DESCRIPTION ]]; then
+    BODY[3]="\"body\": \"$DESCRIPTION\""
+  elif [[ $EDIT ]]; then
+    DESCRIPTION_FILE="/tmp/git-pull-request-description"
+    $EDITOR $DESCRIPTION_FILE
+    DESCRIPTION=$(cat $DESCRIPTION_FILE)
+    rm $DESCRIPTION_FILE
+
     BODY[3]="\"body\": \"$DESCRIPTION\""
   fi
 fi

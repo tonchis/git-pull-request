@@ -19,6 +19,7 @@ $ git config --global github.pull-request.token <access_token>
 
 ```bash
 usage: git pull-request -h <branch> -t <title> [options]
+   or: git pull-request -h <branch> -i <issue> [options]
 
 Create a Pull Request (PR) in GitHub.
 
@@ -31,5 +32,7 @@ OPTIONS:
    -d <description>    Description of the PR.
    -i <issue>          Number of the issue related.
                        WARNING: This will convert the issue into a PR and override <title> and <description>
+   -e                  Will open your EDITOR in a temporary file to write the description.
+
 ```
 
