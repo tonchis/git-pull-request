@@ -32,7 +32,10 @@ OPTIONS:
    -d <description>    Description of the PR.
    -i <issue>          Number of the issue related.
                        WARNING: This will convert the issue into a PR and override <title> and <description>
-   -e                  Will open your EDITOR in a temporary file to write the description.
+   -e                  Opens your EDITOR in a temporary file to write the description.
+   -c                  Copy the PR URL to the clipboard.
 
 ```
+
+The `-c` option requires `xclip` or `pbcopy`.
 

@@ -24,7 +24,8 @@ OPTIONS:
    -d <description>    Description of the PR.
    -i <issue>          Number of the issue related.
                        WARNING: This will convert the issue into a PR and override <title> and <description>
-   -e                  Will open your EDITOR in a temporary file to write the description.
+   -e                  Opens your EDITOR in a temporary file to write the description.
+   -c                  Copy the PR URL to the clipboard.
 
 EOF
 }
@@ -34,7 +35,7 @@ REMOTE_ORIGIN=$(git remote -v | grep -E "origin.*\(fetch\)")
 OWNER=$(echo $REMOTE_ORIGIN | sed -E "s/.*com[:\/](.*)\/.*/\\1/")
 REPO=$(echo $REMOTE_ORIGIN | sed -E "s/.*com[:\/].*\/(.*)\..*/\\1/" | cut -d " " -f 1)
 
-while getopts “h:r:b:t:d:i:e” OPTION
+while getopts “h:r:b:t:d:i:ec” OPTION
 do
   case $OPTION in
     h)
@@ -53,6 +54,8 @@ do
       ISSUE=$OPTARG;;
     e)
       EDIT=true;;
+    c)
+      CLIPBOARD=true;;
     ?)
       usage
       exit;;
@@ -88,4 +91,18 @@ IFS=","
 BODY="{${BODY[*]}}"
 IFS=$SAVE_IFS
 
-curl -s -X POST -H "Authorization: token $ACCESS_TOKEN" "https://api.github.com/repos/$OWNER/$REPO/pulls" -d "$BODY" > /dev/null
+RESPONSE=$(curl -s -X POST -H "Authorization: token $ACCESS_TOKEN" "https://api.github.com/repos/$OWNER/$REPO/pulls" -d "$BODY")
+
+URL=$(echo $RESPONSE | grep -Eo "\"html_url\": \"(.*?\/pull\/\\d+)\"," | sed -E "s/.*\"(https.*)\",/\\1/")
+echo $URL
+
+if [[ $CLIPBOARD ]]; then
+  if [[ $(type pbcopy) == *"not found"* ]]; then
+    CLIP_COMMAND="xclip -selection clipboard"
+  else
+    CLIP_COMMAND="pbcopy"
+  fi
+
+  echo $URL | $CLIP_COMMAND
+fi
+
