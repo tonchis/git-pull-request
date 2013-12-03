@@ -16,7 +16,7 @@ usage: git pull-request -h <branch> -t <title> [options]
 Create a Pull Request (PR) in GitHub.
 
 OPTIONS:
-   -h <branch>         Branch you want to PR. It has to exist in the remote.
+   -h <branch>         Branch you want to PR. It has to exist in the remote. Default from "$ git symbolic-ref --short HEAD"
    -r <repo>           Repo where to PR. Default is picked up from "$ git remote -v" origin fetch url.
    -o <owner>          Owner of the repo. Default is picked up from "$ git remote -v" origin fetch url.
    -b <base>           Branch where you want your PR merged into. Default "master".
@@ -30,6 +30,7 @@ OPTIONS:
 EOF
 }
 
+HEAD=$(git symbolic-ref --short HEAD)
 BASE="master"
 REMOTE_ORIGIN=$(git remote -v | grep -E "origin.*\(fetch\)")
 OWNER=$(echo $REMOTE_ORIGIN | sed -E "s/.*com[:\/](.*)\/.*/\\1/")
@@ -62,7 +63,7 @@ do
   esac
 done
 
-if [[ -z $HEAD ]] || [[ -z $BASE ]] || [[ -z $TITLE ]] && [[ -z $ISSUE ]]; then
+if [[ -z $TITLE ]] && [[ -z $ISSUE ]]; then
   usage
   exit 1
 fi

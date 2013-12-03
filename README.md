@@ -24,7 +24,7 @@ usage: git pull-request -h <branch> -t <title> [options]
 Create a Pull Request (PR) in GitHub.
 
 OPTIONS:
-   -h <branch>         Branch you want to PR. It has to exist in the remote.
+   -h <branch>         Branch you want to PR. It has to exist in the remote. Default from "$ git symbolic-ref --short HEAD"
    -r <repo>           Repo where to PR. Default is picked up from "$ git remote -v" origin fetch url.
    -o <owner>          Owner of the repo. Default is picked up from "$ git remote -v" origin fetch url.
    -b <base>           Branch where you want your PR merged into. Default "master".
