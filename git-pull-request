@@ -1,10 +1,9 @@
 #!/bin/bash
-ACCESS_TOKEN=$(git config --get github.pull-request.token)
+ACCESS_TOKEN=$(cat ~/.git-pull-request | sed -E "s/token (.*)/\\1/")
 if [[ -z $ACCESS_TOKEN ]]; then
   echo "Create an access token for your GitHub user at"
   echo "  https://github.com/settings/applications"
-  echo "and set it under git config github.pull-request.token"
-  echo "  $ git config --global github.pull-request.token <access_token>"
+  echo "and put it in the ~/.git-pull-request file"
   exit 1
 fi
 

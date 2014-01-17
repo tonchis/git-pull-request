@@ -11,11 +11,7 @@ Just lay `git-pull-request` on your `PATH`.
 Usage
 -----
 
-First you need to create a Personal Access Token at https://github.com/settings/applications. Then store it under
-
-```bash
-$ git config --global github.pull-request.token <access_token>
-```
+You'll need to create a Personal Access Token at https://github.com/settings/applications and put it in the `~/.git-pull-request` file.
 
 ```bash
 usage: git pull-request -h <branch> -t <title> [options]
