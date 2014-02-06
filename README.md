@@ -30,6 +30,7 @@ OPTIONS:
                        WARNING: This will convert the issue into a PR and override <title> and <description>
    -e                  Opens your EDITOR in a temporary file to write the description.
    -c                  Copy the PR URL to the clipboard.
+   -f                  Fake run, doesn't make the request but prints the URL and body.
 
 ```
 

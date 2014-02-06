@@ -25,6 +25,7 @@ OPTIONS:
                        WARNING: This will convert the issue into a PR and override <title> and <description>
    -e                  Opens your EDITOR in a temporary file to write the description.
    -c                  Copy the PR URL to the clipboard.
+   -f                  Fake run, doesn't make the request but prints the URL and body.
 
 EOF
 }
@@ -35,7 +36,7 @@ REMOTE_ORIGIN=$(git remote -v | grep -E "origin.*\(fetch\)")
 OWNER=$(echo $REMOTE_ORIGIN | sed -E "s/.*com[:\/](.*)\/.*/\\1/")
 REPO=$(echo $REMOTE_ORIGIN | sed -E "s/.*com[:\/].*\/(.*)\..*/\\1/" | cut -d " " -f 1)
 
-while getopts “h:r:b:t:d:i:ec” OPTION
+while getopts “h:r:b:t:d:i:ecf” OPTION
 do
   case $OPTION in
     h)
@@ -56,6 +57,8 @@ do
       EDIT=true;;
     c)
       CLIPBOARD=true;;
+    f)
+      FAKE=true;;
     ?)
       usage
       exit;;
@@ -91,7 +94,16 @@ IFS=","
 BODY="{${BODY[*]}}"
 IFS=$SAVE_IFS
 
-RESPONSE=$(curl -s -X POST -H "Authorization: token $ACCESS_TOKEN" "https://api.github.com/repos/$OWNER/$REPO/pulls" -d "$BODY")
+PR_URL="https://api.github.com/repos/$OWNER/$REPO/pulls"
+
+if [[ $FAKE ]]; then
+  echo "Fake run, not making the request"
+  echo "  $PR_URL"
+  echo "  $BODY"
+  exit
+else
+  RESPONSE=$(curl -s -X POST -H "Authorization: token $ACCESS_TOKEN" $PR_URL -d $BODY)
+fi
 
 URL=$(echo $RESPONSE | grep -Eo "\"html_url\": \"(.*?\/pull\/\\d+)\"," | sed -E "s/.*\"(https.*)\",/\\1/")
 echo $URL
