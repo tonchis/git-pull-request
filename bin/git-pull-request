@@ -73,19 +73,19 @@ fi
 BODY=("\"head\": \"$HEAD\"" "\"base\": \"$BASE\"")
 
 if [[ -n $ISSUE ]]; then
-  BODY[2]="\"issue\": \"$ISSUE\""
+  BODY+=("\"issue\": \"$ISSUE\"")
 else
-  BODY[2]="\"title\": \"$TITLE\""
+  BODY+=("\"title\": \"$TITLE\"")
 
   if [[ -n $DESCRIPTION ]]; then
-    BODY[3]="\"body\": \"$DESCRIPTION\""
+    BODY+=("\"body\": \"$DESCRIPTION\"")
   elif [[ $EDIT ]]; then
     DESCRIPTION_FILE="/tmp/git-pull-request-description"
     $EDITOR $DESCRIPTION_FILE
     DESCRIPTION=$(cat $DESCRIPTION_FILE)
     rm $DESCRIPTION_FILE
 
-    BODY[3]="\"body\": \"$DESCRIPTION\""
+    BODY+=("\"body\": \"$DESCRIPTION\"")
   fi
 fi
 
