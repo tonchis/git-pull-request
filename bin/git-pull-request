@@ -32,7 +32,7 @@ EOF
 
 HEAD=$(git symbolic-ref --short HEAD)
 BASE="master"
-REMOTE_ORIGIN=$(git remote -v | grep -E "origin.*\(fetch\)")
+REMOTE_ORIGIN=$(git remote -v | grep -E "github\.com.*\(push\)")
 OWNER=$(echo $REMOTE_ORIGIN | sed -E "s/.*com[:\/](.*)\/.*/\\1/")
 REPO=$(echo $REMOTE_ORIGIN | sed -E "s/.*com[:\/].*\/(.*)\..*/\\1/" | cut -d " " -f 1)
 
