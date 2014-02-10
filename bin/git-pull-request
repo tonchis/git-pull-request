@@ -102,7 +102,7 @@ if [[ $FAKE ]]; then
   echo "  $BODY"
   exit
 else
-  RESPONSE=$(curl -s -H "Authorization: $ACCESS_TOKEN" -H "Content-Type: application/json" -d "$BODY" $PR_URL)
+  RESPONSE=$(curl -s -H "Authorization: token $ACCESS_TOKEN" -H "Content-Type: application/json" -d "$BODY" $PR_URL)
 fi
 
 URL=$(echo $RESPONSE | grep -Eo "\"html_url\": \"(.*?\/pull\/\\d+)\"," | sed -E "s/.*\"(https.*)\",/\\1/")
