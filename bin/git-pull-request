@@ -1,5 +1,5 @@
 #!/bin/bash
-ACCESS_TOKEN=$(cat ~/.git-pull-request | sed -E "s/token (.*)/\\1/")
+ACCESS_TOKEN=$(cat ~/.git-pull-request)
 if [[ -z $ACCESS_TOKEN ]]; then
   echo "Create an access token for your GitHub user at"
   echo "  https://github.com/settings/applications"
@@ -70,27 +70,27 @@ if [[ -z $TITLE ]] && [[ -z $ISSUE ]]; then
   exit 1
 fi
 
-BODY=("\"head\":\"$HEAD\"" "\"base\":\"$BASE\"")
+BODY=("\"head\": \"$HEAD\"" "\"base\": \"$BASE\"")
 
 if [[ -n $ISSUE ]]; then
-  BODY+=("\"issue\":\"$ISSUE\"")
+  BODY+=("\"issue\": \"$ISSUE\"")
 else
-  BODY+=("\"title\":\"$TITLE\"")
+  BODY+=("\"title\": \"$TITLE\"")
 
   if [[ -n $DESCRIPTION ]]; then
-    BODY+=("\"body\":\"$DESCRIPTION\"")
+    BODY+=("\"body\": \"$DESCRIPTION\"")
   elif [[ $EDIT ]]; then
     DESCRIPTION_FILE="/tmp/git-pull-request-description"
     $EDITOR $DESCRIPTION_FILE
     DESCRIPTION=$(cat $DESCRIPTION_FILE)
     rm $DESCRIPTION_FILE
 
-    BODY+=("\"body\":\"$DESCRIPTION\"")
+    BODY+=("\"body\": \"$DESCRIPTION\"")
   fi
 fi
 
 SAVE_IFS=$IFS
-IFS=", "
+IFS=","
 BODY="{${BODY[*]}}"
 IFS=$SAVE_IFS
 
@@ -102,12 +102,15 @@ if [[ $FAKE ]]; then
   echo "  $BODY"
   exit
 else
-  RESPONSE=$(curl -s -X POST -H "Authorization: token $ACCESS_TOKEN" -H "Content-Type: application/json" $PR_URL -d $BODY)
+  RESPONSE=$(curl -s -H "Authorization: $ACCESS_TOKEN" -H "Content-Type: application/json" -d "$BODY" $PR_URL)
 fi
-echo $RESPONSE
 
 URL=$(echo $RESPONSE | grep -Eo "\"html_url\": \"(.*?\/pull\/\\d+)\"," | sed -E "s/.*\"(https.*)\",/\\1/")
-echo $URL
+if [[ -n $URL ]]; then
+  echo $URL
+else
+  echo $RESPONSE
+fi
 
 if [[ $CLIPBOARD ]]; then
   if [[ $(type pbcopy) == *"not found"* ]]; then
