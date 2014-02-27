@@ -1,5 +1,9 @@
 #!/bin/bash
+
+set -e
+
 ACCESS_TOKEN=$(cat ~/.git-pull-request)
+
 if [[ -z $ACCESS_TOKEN ]]; then
   echo "Create an access token for your GitHub user at"
   echo "  https://github.com/settings/applications"
@@ -31,10 +35,19 @@ EOF
 }
 
 HEAD=$(git symbolic-ref --short HEAD)
-BASE="master"
-REMOTE_ORIGIN=$(git remote -v | grep -E "github\.com.*\(push\)")
-OWNER=$(echo $REMOTE_ORIGIN | sed -E "s/.*com[:\/](.*)\/.*/\\1/")
-REPO=$(echo $REMOTE_ORIGIN | sed -E "s/.*com[:\/].*\/(.*)\..*/\\1/" | cut -d " " -f 1)
+BASE=master
+
+OWNER_URL=$(git remote -v | awk '/https:..github.com.* .push.$/ { sub(/^https:\/\/github.com\//, "", $2); print $2 }' | head -1)
+CONTRIBUTOR_URL=$(git remote -v | awk '/git@github.com.* .push.$/ { sub(/^git@github.com:/, "", $2); print $2 }' | head -1)
+
+if [[ -z $OWNER_URL ]]; then
+  OWNER_URL=$CONTRIBUTOR_URL
+fi
+
+OWNER=$(cut -d/ -f1 <<< $OWNER_URL)
+REPO=$(cut -d/ -f2 <<< $OWNER_URL)
+
+CONTRIBUTOR=$(cut -d/ -f1 <<< $CONTRIBUTOR_URL)
 
 while getopts “h:r:b:t:d:i:ecf” OPTION
 do
@@ -68,6 +81,10 @@ done
 if [[ -z $TITLE ]] && [[ -z $ISSUE ]]; then
   usage
   exit 1
+fi
+
+if [[ $OWNER != $CONTRIBUTOR ]]; then
+  HEAD=$CONTRIBUTOR:$HEAD
 fi
 
 BODY=("\"head\": \"$HEAD\"" "\"base\": \"$BASE\"")
@@ -121,4 +138,3 @@ if [[ $CLIPBOARD ]]; then
 
   echo $URL | $CLIP_COMMAND
 fi
-
