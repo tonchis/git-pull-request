@@ -45,7 +45,7 @@ if [[ -z $OWNER_URL ]]; then
 fi
 
 OWNER=$(cut -d/ -f1 <<< $OWNER_URL)
-REPO=$(cut -d/ -f2 <<< $OWNER_URL)
+REPO=$(cut -d/ -f2 <<< $OWNER_URL | sed -e 's/\.git$//')
 
 CONTRIBUTOR=$(cut -d/ -f1 <<< $CONTRIBUTOR_URL)
 
