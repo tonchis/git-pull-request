@@ -36,7 +36,7 @@ REMOTE_ORIGIN=$(git remote -v | grep -E "github\.com.*\(push\)")
 OWNER=$(echo $REMOTE_ORIGIN | sed -E "s/.*com[:\/](.*)\/.*/\\1/")
 REPO=$(echo $REMOTE_ORIGIN | sed -E "s/.*com[:\/].*\/(.*)\..*/\\1/" | cut -d " " -f 1)
 
-while getopts “h:r:b:t:d:i:ecf” OPTION
+while getopts “h:r:b:t:d:i:o:ecf” OPTION
 do
   case $OPTION in
     h)
