@@ -13,17 +13,18 @@ fi
 
 usage() {
 cat << EOF
-usage: git pull-request -h <branch> -t <title> [options]
-   or: git pull-request -h <branch> -i <issue> [options]
+usage: git pull-request [options]
+   or: git pull-request -t <title> [options]
+   or: git pull-request -i <issue> [options]
 
 Create a Pull Request (PR) in GitHub.
 
 OPTIONS:
-   -h <branch>         Branch you want to PR. It has to exist in the remote. Default from "$ git symbolic-ref --short HEAD"
-   -r <repo>           Repo where to PR. Default is picked up from "$ git remote -v" origin fetch url.
-   -o <owner>          Owner of the repo. Default is picked up from "$ git remote -v" origin fetch url.
-   -b <base>           Branch where you want your PR merged into. Default "master".
-   -t <title>          Title of the PR.
+   -h <branch>         Branch you want to PR. It has to exist in the remote. (Default: current branch)
+   -r <repo>           Repo where to PR. (Default: current repo name)
+   -o <owner>          Owner of the repo. (Default: parsed from your remote's URL)
+   -b <base>           Branch where you want your PR merged into. (Default: master)
+   -t <title>          Title of the PR. (Default: the last commit's title, as long as there is only one commit in the PR.)
    -d <description>    Description of the PR.
    -i <issue>          Number of the issue related.
                        WARNING: This will convert the issue into a PR and override <title> and <description>
@@ -79,8 +80,18 @@ do
 done
 
 if [[ -z $TITLE ]] && [[ -z $ISSUE ]]; then
-  usage
-  exit 1
+  COUNT=$(git log --oneline $BASE..HEAD | wc -l)
+
+  if [[ $COUNT -eq 1 ]]; then
+    TITLE=$(git log -1 --pretty=%s)
+  else
+    cat <<-EOS >&2
+Refusing to choose a PR title for you since there are many commits to choose from.
+Please specify -t yourself.
+EOS
+
+    exit 1
+  fi
 fi
 
 if [[ $OWNER != $CONTRIBUTOR ]]; then
