@@ -31,6 +31,7 @@ OPTIONS:
    -e                  Opens your EDITOR in a temporary file to write the description.
    -c                  Copy the PR URL to the clipboard.
    -f                  Fake run, doesn't make the request but prints the URL and body.
+   -w                  Add "wip" label on the issue. The -i <issue> option is required.
 
 EOF
 }
