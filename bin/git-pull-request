@@ -50,7 +50,7 @@ REPO=$(cut -d/ -f2 <<< $OWNER_URL | sed -e 's/\.git$//')
 
 CONTRIBUTOR=$(cut -d/ -f1 <<< $CONTRIBUTOR_URL)
 
-while getopts “h:r:b:t:d:i:o:ecf” OPTION
+while getopts “h:r:b:t:d:i:o:ecfw” OPTION
 do
   case $OPTION in
     h)
@@ -73,6 +73,8 @@ do
       CLIPBOARD=true;;
     f)
       FAKE=true;;
+    w)
+      WIP=true;;
     ?)
       usage
       exit;;
@@ -102,6 +104,15 @@ BODY=("\"head\": \"$HEAD\"" "\"base\": \"$BASE\"")
 
 if [[ -n $ISSUE ]]; then
   BODY+=("\"issue\": \"$ISSUE\"")
+  if [[ -n $WIP ]] ; then
+    ISSUE_URL="https://api.github.com/repos/$OWNER/$REPO/issues/$ISSUE/labels"
+
+    if [[ -n $FAKE ]]; then
+      echo "Fake run, not setting any labels"
+    else
+      curl -s -H "Authorization: token $ACCESS_TOKEN" -H "Content-Type: application/json" -d "['wip']" $ISSUE_URL
+    fi
+  fi
 else
   BODY+=("\"title\": \"$TITLE\"")
 
