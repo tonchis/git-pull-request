@@ -113,7 +113,7 @@ if [[ -n $ISSUE ]]; then
       echo "  $ISSUE_URL"
       echo "  $ISSUE_BODY"
     else
-      curl -s -H "Authorization: token $ACCESS_TOKEN" -H "Content-Type: application/json" -d "$ISSUE_BODY" $ISSUE_URL
+      curl -s -H "Authorization: token $ACCESS_TOKEN" -H "Content-Type: application/json" -d "$ISSUE_BODY" $ISSUE_URL > /dev/null
     fi
   fi
 else
