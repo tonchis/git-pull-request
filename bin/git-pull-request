@@ -106,11 +106,14 @@ if [[ -n $ISSUE ]]; then
   BODY+=("\"issue\": \"$ISSUE\"")
   if [[ -n $WIP ]] ; then
     ISSUE_URL="https://api.github.com/repos/$OWNER/$REPO/issues/$ISSUE/labels"
+    ISSUE_BODY="['wip']"
 
     if [[ -n $FAKE ]]; then
       echo "Fake run, not setting any labels"
+      echo "  $ISSUE_URL"
+      echo "  $ISSUE_BODY"
     else
-      curl -s -H "Authorization: token $ACCESS_TOKEN" -H "Content-Type: application/json" -d "['wip']" $ISSUE_URL
+      curl -s -H "Authorization: token $ACCESS_TOKEN" -H "Content-Type: application/json" -d "$ISSUE_BODY" $ISSUE_URL
     fi
   fi
 else
