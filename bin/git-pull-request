@@ -106,7 +106,7 @@ if [[ -n $ISSUE ]]; then
   BODY+=("\"issue\": \"$ISSUE\"")
   if [[ -n $WIP ]] ; then
     ISSUE_URL="https://api.github.com/repos/$OWNER/$REPO/issues/$ISSUE/labels"
-    ISSUE_BODY="['wip']"
+    ISSUE_BODY="[\"wip\"]"
 
     if [[ -n $FAKE ]]; then
       echo "Fake run, not setting any labels"
