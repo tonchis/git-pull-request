@@ -132,7 +132,8 @@ else
     rm $DESCRIPTION_FILE
   fi
 
-    BODY+=("\"body\": \"$DESCRIPTION\"")
+  if [[ -n $DESCRIPTION ]]; then
+    BODY+=("\"body\": \"$(sed -e 's/$/\\n/' <<< "$DESCRIPTION" | tr -d '\n')\"")
   fi
 fi
 
