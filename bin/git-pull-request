@@ -124,13 +124,13 @@ if [[ -n $ISSUE ]]; then
 else
   BODY+=("\"title\": \"$TITLE\"")
 
-  if [[ -n $DESCRIPTION ]]; then
-    BODY+=("\"body\": \"$DESCRIPTION\"")
-  elif [[ $EDIT ]]; then
+  if [[ $EDIT ]]; then
     DESCRIPTION_FILE="/tmp/git-pull-request-description"
+    echo "$DESCRIPTION" > $DESCRIPTION_FILE
     $EDITOR $DESCRIPTION_FILE
     DESCRIPTION=$(cat $DESCRIPTION_FILE)
     rm $DESCRIPTION_FILE
+  fi
 
     BODY+=("\"body\": \"$DESCRIPTION\"")
   fi
