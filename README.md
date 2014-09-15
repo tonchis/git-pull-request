@@ -32,7 +32,7 @@ More options:
        -o <owner>          Owner of the repo. (Default: parsed from your remote's URL)
        -b <base>           Branch where you want your PR merged into. (Default: master)
        -t <title>          Title of the PR. (Default: the last commit's title, as long as there is only one commit in the PR.)
-       -d <description>    Description of the PR.
+       -d <description>    Description of the PR. "-" means read from standard input.
        -i <issue>          Number of the issue related.
                            WARNING: This will convert the issue into a PR and override <title> and <description>
        -e                  Opens your EDITOR in a temporary file to write the description.
