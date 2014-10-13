@@ -45,7 +45,13 @@ The `-c` option requires `xclip` or `pbcopy`.
 Installation
 ------------
 
-Just lay `git-pull-request` on your `PATH`.
+With Homebrew
+
+```shel
+brew tap tonchis/goodies && brew update && brew install git-pull-request
+```
+
+For the standalone version, just lay `git-pull-request` on your `PATH`.
 
 You'll need to create a Personal Access Token at https://github.com/settings/applications and put it in the `~/.git-pull-request` file.
 
