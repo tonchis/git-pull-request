@@ -48,7 +48,7 @@ Installation
 With Homebrew
 
 ```shel
-brew tap tonchis/goodies && brew update && brew install git-pull-request
+brew tap tonchis/goodies && brew install git-pull-request
 ```
 
 For the standalone version, just lay `git-pull-request` on your `PATH`.
