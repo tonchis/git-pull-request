@@ -134,7 +134,11 @@ else
 # Third line onwards will be interpreted as the description.
 # Clearly, lines starting with '#' will be ignored.
 EOS
-    $EDITOR $DESCRIPTION_FILE
+    if ! $EDITOR $DESCRIPTION_FILE; then
+      echo Aborted. >&2
+      exit 1
+    fi
+
     TITLE=$(grep -v '^#' $DESCRIPTION_FILE | head -1)
     DESCRIPTION=$(grep -v '^#' $DESCRIPTION_FILE | tail +3)
     rm $DESCRIPTION_FILE
