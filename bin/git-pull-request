@@ -133,13 +133,17 @@ else
 # The second line must be empty.
 # Third line onwards will be interpreted as the description.
 # Clearly, lines starting with '#' will be ignored.
+#
+# Leave this file blank to abort the operation.
 EOS
-    if ! $EDITOR $DESCRIPTION_FILE; then
+    $EDITOR $DESCRIPTION_FILE
+    TITLE=$(grep -v '^#' $DESCRIPTION_FILE | head -1)
+
+    if [[ -z "$TITLE" ]]; then
       echo Aborted. >&2
       exit 1
     fi
 
-    TITLE=$(grep -v '^#' $DESCRIPTION_FILE | head -1)
     DESCRIPTION=$(grep -v '^#' $DESCRIPTION_FILE | tail +3)
     rm $DESCRIPTION_FILE
   fi
