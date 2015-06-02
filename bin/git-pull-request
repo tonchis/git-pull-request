@@ -28,7 +28,7 @@ OPTIONS:
    -d <description>    Description of the PR. "-" means read from standard input.
    -i <issue>          Number of the issue related.
                        WARNING: This will convert the issue into a PR and override <title> and <description>
-   -e                  Opens your EDITOR in a temporary file to write the description.
+   -e                  Opens your EDITOR in a temporary file to write the title and description.
    -c                  Copy the PR URL to the clipboard.
    -f                  Fake run, doesn't make the request but prints the URL and body.
    -w                  Add "wip" label on the issue. The -i <issue> option is required.
@@ -122,15 +122,25 @@ if [[ -n $ISSUE ]]; then
     fi
   fi
 else
-  BODY+=("\"title\": \"$TITLE\"")
-
   if [[ $EDIT ]]; then
-    DESCRIPTION_FILE="/tmp/git-pull-request-description"
-    echo "$DESCRIPTION" > $DESCRIPTION_FILE
+    DESCRIPTION_FILE=$(mktemp -t $(basename $0).XXXXXX)
+    echo "$TITLE"        > $DESCRIPTION_FILE
+    echo                >> $DESCRIPTION_FILE
+    echo "$DESCRIPTION" >> $DESCRIPTION_FILE
+    cat <<-EOS >> $DESCRIPTION_FILE
+#
+# The first line will be the issue title.
+# The second line must be empty.
+# Third line onwards will be interpreted as the description.
+# Clearly, lines starting with '#' will be ignored.
+EOS
     $EDITOR $DESCRIPTION_FILE
-    DESCRIPTION=$(cat $DESCRIPTION_FILE)
+    TITLE=$(grep -v '^#' $DESCRIPTION_FILE | head -1)
+    DESCRIPTION=$(grep -v '^#' $DESCRIPTION_FILE | tail +3)
     rm $DESCRIPTION_FILE
   fi
+
+  BODY+=("\"title\": \"$TITLE\"")
 
   if [[ -n $DESCRIPTION ]]; then
     BODY+=("\"body\": \"$(sed -e 's/$/\\n/' <<< "$DESCRIPTION" | tr -d '\n')\"")
